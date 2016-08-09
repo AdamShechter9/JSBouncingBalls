@@ -1,0 +1,28 @@
+html, body {
+	background-color: black;
+	margin: 0;
+	padding: 0;
+}
+
+#starscape {
+	display: none;
+}
+
+#balls {
+	border: 1px solid silver;
+	background-color: white;
+}
+
+#myCanvas {
+	border: 1px solid silver;
+	background-color: white;
+}
+
+#myclock {
+	background-color: black;
+	vertical-align: top;
+}
+
+p {
+	color: white;
+}
