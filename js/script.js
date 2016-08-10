@@ -6,7 +6,7 @@
 var circlesArr = [];
 var gravity = 1;
 
-var colors = ["#000000", "#FF0000", "#00FF00",
+const COLORS = ["#000000", "#FF0000", "#00FF00",
 			 "#0000FF", "#FFFF00", "#00FFFF", "#FF00FF", "#C0C0C0"];
 
 
@@ -24,11 +24,11 @@ function createCanvasObject() {
 function circleOBJ (circlex, circley) {
 	this.x = circlex;
 	this.y = circley;
-	this.radius = Math.floor(Math.random()*20)+5;
+	this.radius = Math.floor(Math.random()*15)+3;
 	this.xvelocity = Math.floor(Math.random()*5)+0.5;
 	this.yvelocity = Math.floor(Math.random()*5)+0.5;
 	colorn = Math.floor(Math.random()*8);
-	this.color = colors[colorn];
+	this.color = COLORS[colorn];
 }
 
 var requestAnimationFrame = window.requestAnimationFrame || 
@@ -50,13 +50,13 @@ function renderCircle() {
 		ctx.fill();
 		ctx.closePath();
 
-		if (((circlesArr[i].y + circlesArr[i].radius) > canvas.height) || ((circlesArr[i].y - circlesArr[i].radius) < 0))
+		if (((circlesArr[i].y) > canvas.height) || ((circlesArr[i].y) < 0))
 		{
-			circlesArr[i].yvelocity*=-1;
+			circlesArr[i].yvelocity *= -1;
 		}
-		if (((circlesArr[i].x + circlesArr[i].radius) >= canvas.width) || ((circlesArr[i].x - circlesArr[i].radius) <= 0))
+		if (((circlesArr[i].x) >= canvas.width) || ((circlesArr[i].x) <= 0))
 		{
-			circlesArr[i].xvelocity*=-1;
+			circlesArr[i].xvelocity *= -1;
 		}
 		circlesArr[i].y += circlesArr[i].yvelocity;
 		circlesArr[i].x += circlesArr[i].xvelocity;
@@ -72,17 +72,44 @@ function renderCircle() {
 				var xdist = Math.pow((circlesArr[i].x - circlesArr[idx].x), 2);
 				var ydist = Math.pow((circlesArr[i].y - circlesArr[idx].y), 2);
 				var radSqr = Math.pow((circlesArr[i].radius + circlesArr[idx].radius), 2);
+
 				if ((xdist + ydist) <= radSqr) {
-					// console.log('collision!!!!!!', i, idx);
-					if (idx > i) {
-						circlesArr.splice(idx, 1);
-						circlesArr.splice(i, 1);
+					// collision
+					var colorn;
+
+					if ((circlesArr[i].radius < 50) || (circlesArr[idx].radius < 50)) {
+						console.log('less than 50 collision', i, idx);
+						if (circlesArr[i].radius > circlesArr[idx].radius) {
+							if (circlesArr[i].radius < 50) {
+								circlesArr[i].radius += (circlesArr[idx].radius / 2);
+							}
+							colorn = Math.floor(Math.random()*8);
+							while ((COLORS[colorn] == circlesArr[i].color) || (COLORS[colorn] == circlesArr[idx].color)) {
+								colorn = Math.floor(Math.random()*8);
+							}
+							circlesArr[i].color = COLORS[colorn];
+							circlesArr.splice(idx, 1);
+						} else if (circlesArr[i].radius <= circlesArr[idx].radius) {
+							if (circlesArr[idx].radius < 50) {
+								circlesArr[idx].radius += (circlesArr[i].radius / 2);
+							}
+							
+							colorn = Math.floor(Math.random()*8);
+							while ((COLORS[colorn] == circlesArr[i].color) || (COLORS[colorn] == circlesArr[idx].color)) {
+								colorn = Math.floor(Math.random()*8);
+							}
+							circlesArr[idx].color = COLORS[colorn];
+							circlesArr.splice(i, 1);
+						}
 					} else {
-						circlesArr.splice(i, 1);
-						circlesArr.splice(idx, 1);
+						// Large balls bounce off one another.
+						console.log('greater than 50 radius collision', i, idx);
+							// circlesArr[i].xvelocity *= -1;
+							// circlesArr[i].yvelocity *= -1;
+							// circlesArr[idx].xvelocity *= -1;
+							// circlesArr[idx].yvelocity *= -1;
 					}
-					
-					break;
+					break;			
 				}
 			}
 		}
